@@ -1,0 +1,496 @@
+{
+  "info": {
+    "_postman_id": "4fae5e84-8bcc-4a47-a9f7-a635028d58a4",
+    "name": "clinic_Quiz2_postman",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "58409016"
+  },
+  "item": [
+    {
+      "name": "A1",
+      "request": {
+        "auth": {
+          "type": "inherit"
+        },
+        "method": "PUT",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8082/api/doctors/e36f53cc-7a33-4bda-9da0-bf31548d72a3/specializations/a7cc0031-0a72-422b-a982-de01cac41f12",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8082",
+          "path": [
+            "api",
+            "doctors",
+            "e36f53cc-7a33-4bda-9da0-bf31548d72a3",
+            "specializations",
+            "a7cc0031-0a72-422b-a982-de01cac41f12"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "A2",
+      "request": {
+        "auth": {
+          "type": "inherit"
+        },
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8082/api/doctors/e36f53cc-7a33-4bda-9da0-bf31548d72a3/specializations/a7cc0031-0a72-422b-a982-de01cac41f12",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8082",
+          "path": [
+            "api",
+            "doctors",
+            "e36f53cc-7a33-4bda-9da0-bf31548d72a3",
+            "specializations",
+            "a7cc0031-0a72-422b-a982-de01cac41f12"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "A3",
+      "request": {
+        "auth": {
+          "type": "inherit"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8082/api/offices/free",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8082",
+          "path": [
+            "api",
+            "offices",
+            "free"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "A4",
+      "request": {
+        "auth": {
+          "type": "inherit"
+        },
+        "method": "PATCH",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8082/api/doctors/e36f53cc-7a33-4bda-9da0-bf31548d72a3/office?officeNumber=101",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8082",
+          "path": [
+            "api",
+            "doctors",
+            "e36f53cc-7a33-4bda-9da0-bf31548d72a3",
+            "office"
+          ],
+          "query": [
+            {
+              "key": "officeNumber",
+              "value": "101",
+              "sortOrder": 0
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "B1",
+      "request": {
+        "auth": {
+          "type": "inherit"
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"appointmentDate\": \"2026-10-20\",\r\n  \"reason\": \"General medical checkup\",\r\n  \"status\": \"CANCELLED\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8082/api/appointment/save?patientId=93169558-018c-40d2-b463-2cd5f56e555d&doctorId=e36f53cc-7a33-4bda-9da0-bf31548d72a3",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8082",
+          "path": [
+            "api",
+            "appointment",
+            "save"
+          ],
+          "query": [
+            {
+              "key": "patientId",
+              "value": "93169558-018c-40d2-b463-2cd5f56e555d",
+              "type": "text",
+              "id": 0,
+              "sortOrder": 0
+            },
+            {
+              "key": "doctorId",
+              "value": "e36f53cc-7a33-4bda-9da0-bf31548d72a3",
+              "type": "text",
+              "id": 1,
+              "sortOrder": 1
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "B2",
+      "request": {
+        "auth": {
+          "type": "inherit"
+        },
+        "method": "PATCH",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8082/api/appointments/a06d535e-9e66-45df-b034-b096f249e15a/status?status=CONFIRMED",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8082",
+          "path": [
+            "api",
+            "appointments",
+            "a06d535e-9e66-45df-b034-b096f249e15a",
+            "status"
+          ],
+          "query": [
+            {
+              "key": "status",
+              "value": "CONFIRMED",
+              "sortOrder": 0
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "B3",
+      "request": {
+        "auth": {
+          "type": "inherit"
+        },
+        "method": "PATCH",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8082/api/appointments/a06d535e-9e66-45df-b034-b096f249e15a/reschedule?newDate=2026-10-30",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8082",
+          "path": [
+            "api",
+            "appointments",
+            "a06d535e-9e66-45df-b034-b096f249e15a",
+            "reschedule"
+          ],
+          "query": [
+            {
+              "key": "newDate",
+              "value": "2026-10-30",
+              "sortOrder": 0
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "C1",
+      "request": {
+        "auth": {
+          "type": "inherit"
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"medicineName\": \"Amoxicillin\",\r\n  \"dosage\": \"1 tablet, 3 times a day\",\r\n  \"durationDays\": 7\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8082/api/prescriptions/save?appointmentId=7882b8a4-5b3a-4940-a9c5-92e59b0450e6",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8082",
+          "path": [
+            "api",
+            "prescriptions",
+            "save"
+          ],
+          "query": [
+            {
+              "key": "appointmentId",
+              "value": "7882b8a4-5b3a-4940-a9c5-92e59b0450e6",
+              "sortOrder": 0
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "C1 wrong",
+      "request": {
+        "auth": {
+          "type": "inherit"
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"medicineName\": \"Amoxicillin\",\r\n  \"dosage\": \"1 tablet, 3 times a day\",\r\n  \"durationDays\": 7\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8082/api/prescriptions/save?appointmentId=00000000-0000-0000-0000-000000000000",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8082",
+          "path": [
+            "api",
+            "prescriptions",
+            "save"
+          ],
+          "query": [
+            {
+              "key": "appointmentId",
+              "value": "00000000-0000-0000-0000-000000000000",
+              "sortOrder": 0
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "C1 completed",
+      "request": {
+        "auth": {
+          "type": "inherit"
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"medicineName\": \"Amoxicillin\",\r\n  \"dosage\": \"1 tablet, 3 times a day\",\r\n  \"durationDays\": 7\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8082/api/prescriptions/save?appointmentId=a06d535e-9e66-45df-b034-b096f249e15a",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8082",
+          "path": [
+            "api",
+            "prescriptions",
+            "save"
+          ],
+          "query": [
+            {
+              "key": "appointmentId",
+              "value": "a06d535e-9e66-45df-b034-b096f249e15a",
+              "sortOrder": 0
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "C1 duration",
+      "request": {
+        "auth": {
+          "type": "inherit"
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"medicineName\": \"Amoxicillin\",\r\n  \"dosage\": \"1 tablet, 3 times a day\",\r\n  \"durationDays\": 0\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8082/api/prescriptions/save?appointmentId=7882b8a4-5b3a-4940-a9c5-92e59b0450e6",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8082",
+          "path": [
+            "api",
+            "prescriptions",
+            "save"
+          ],
+          "query": [
+            {
+              "key": "appointmentId",
+              "value": "7882b8a4-5b3a-4940-a9c5-92e59b0450e6",
+              "sortOrder": 0
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "C2",
+      "request": {
+        "auth": {
+          "type": "inherit"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8082/api/prescriptions/appointment/7882b8a4-5b3a-4940-a9c5-92e59b0450e6",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8082",
+          "path": [
+            "api",
+            "prescriptions",
+            "appointment",
+            "7882b8a4-5b3a-4940-a9c5-92e59b0450e6"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "C2 missing",
+      "request": {
+        "auth": {
+          "type": "inherit"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8082/api/prescriptions/appointment/00000000-0000-0000-0000-000000000000",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8082",
+          "path": [
+            "api",
+            "prescriptions",
+            "appointment",
+            "00000000-0000-0000-0000-000000000000"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "C3 prescriptions by patient",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": ""
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "C4 test updating",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": ""
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "C4 test deleting",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8082/api/prescriptions/delete/88c7ca53-baa6-4f38-94c0-66078fdf14ef",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8082",
+          "path": [
+            "api",
+            "prescriptions",
+            "delete",
+            "88c7ca53-baa6-4f38-94c0-66078fdf14ef"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "D1",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": ""
+        }
+      },
+      "response": []
+    }
+  ]
+}
