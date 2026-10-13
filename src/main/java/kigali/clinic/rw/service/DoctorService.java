@@ -80,8 +80,12 @@ public class DoctorService {
 
     // A1 - Add specialization to doctor
     @Transactional
-    public String addSpecialization(UUID doctorId, UUID specializationId) {
-        Optional<Doctor> doctorResult = docRepo.findById(doctorId);
+    public String addSpecialization(
+            UUID doctorId,
+            UUID specializationId) {
+
+        Optional<Doctor> doctorResult =
+                docRepo.findById(doctorId);
 
         if (doctorResult.isEmpty()) {
             return "The doctor with that id does not exist";
@@ -97,8 +101,11 @@ public class DoctorService {
         Doctor doctor = doctorResult.get();
         Specialization specialization = specializationResult.get();
 
-        if (doctor.getSpecializations().stream()
-                .anyMatch(s -> s.getId().equals(specializationId))) {
+        boolean alreadyExists = doctor.getSpecializations()
+                .stream()
+                .anyMatch(s -> s.getId().equals(specializationId));
+
+        if (alreadyExists) {
             return "The doctor already has that specialization";
         }
 
@@ -108,9 +115,80 @@ public class DoctorService {
         return "Specialization added to the doctor";
     }
 
+    // A2 - Remove specialization from doctor
+    @Transactional
+    public String removeSpecialization(
+            UUID doctorId,
+            UUID specializationId) {
+
+        Optional<Doctor> doctorResult =
+                docRepo.findById(doctorId);
+
+        if (doctorResult.isEmpty()) {
+            return "The doctor with that id does not exist";
+        }
+
+        Optional<Specialization> specializationResult =
+                specRepo.findById(specializationId);
+
+        if (specializationResult.isEmpty()) {
+            return "That specialization does not exist";
+        }
+
+        Doctor doctor = doctorResult.get();
+
+        boolean removed = doctor.getSpecializations()
+                .removeIf(s -> s.getId().equals(specializationId));
+
+        if (!removed) {
+            return "The doctor does not have that specialization";
+        }
+
+        docRepo.save(doctor);
+
+        return "Specialization removed from the doctor";
+    }
+
+    // A4 - Change doctor's office by office number
+    @Transactional
+    public String changeDoctorOffice(
+            UUID doctorId,
+            Integer officeNumber) {
+
+        Optional<Doctor> doctorResult =
+                docRepo.findById(doctorId);
+
+        if (doctorResult.isEmpty()) {
+            return "The doctor with that id does not exist";
+        }
+
+        Optional<Office> officeResult =
+                offRepo.findByOfficeNumber(officeNumber);
+
+        if (officeResult.isEmpty()) {
+            return "The office with that office number does not exist";
+        }
+
+        Doctor doctor = doctorResult.get();
+        Office newOffice = officeResult.get();
+
+        Doctor occupant = newOffice.getDoctor();
+
+        if (occupant != null
+                && !occupant.getId().equals(doctorId)) {
+            return "That office is taken by other doctor";
+        }
+
+        doctor.setOffice(newOffice);
+        docRepo.save(doctor);
+
+        return "Office changed successfully";
+    }
+
     // UPDATE
     public String updateDoctor(UUID id, Doctor newDoctor) {
-        Optional<Doctor> existing = docRepo.findById(id);
+        Optional<Doctor> existing =
+                docRepo.findById(id);
 
         if (existing.isEmpty()) {
             return "Doctor not found";
@@ -137,7 +215,8 @@ public class DoctorService {
     // DELETE
     @Transactional
     public String deleteDoctor(UUID id) {
-        Optional<Doctor> existing = docRepo.findById(id);
+        Optional<Doctor> existing =
+                docRepo.findById(id);
 
         if (existing.isEmpty()) {
             return "Doctor not found";
@@ -162,12 +241,14 @@ public class DoctorService {
             Office requestedOffice,
             UUID doctorId) {
 
-        if (requestedOffice == null || requestedOffice.getId() == null) {
+        if (requestedOffice == null
+                || requestedOffice.getId() == null) {
             doctor.setOffice(null);
             return null;
         }
 
-        Optional<Office> office = offRepo.findById(requestedOffice.getId());
+        Optional<Office> office =
+                offRepo.findById(requestedOffice.getId());
 
         if (office.isEmpty()) {
             return "Office not found";

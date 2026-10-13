@@ -15,6 +15,14 @@ public interface OfficeRepository extends JpaRepository<Office, UUID> {
 
     Optional<Office> findByOfficeNumber(Integer officeNumber);
 
+    // A3 - Find free offices, sorted by office number
+    @Query("SELECT o FROM Office o " +
+           "WHERE NOT EXISTS (" +
+           "SELECT d.id FROM Doctor d WHERE d.office = o) " +
+           "ORDER BY o.officeNumber ASC")
+    List<Office> findFreeOffices();
+
+    // Existing busiest-office query
     @Query("SELECT o.name, o.officeNumber, COUNT(a) " +
            "FROM Office o " +
            "JOIN Doctor d ON d.office.id = o.id " +

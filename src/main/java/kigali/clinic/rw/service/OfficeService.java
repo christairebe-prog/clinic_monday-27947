@@ -18,7 +18,6 @@ public class OfficeService {
 
     // CREATE
     public String saveOffice(Office office) {
-
         Optional<Office> existing =
                 officeRepo.findByOfficeNumber(
                         office.getOfficeNumber());
@@ -28,7 +27,6 @@ public class OfficeService {
         }
 
         officeRepo.save(office);
-
         return "Office is saved successfully";
     }
 
@@ -42,9 +40,13 @@ public class OfficeService {
         return officeRepo.findById(id);
     }
 
-    // C3
-    public String getBusiestOffice() {
+    // A3 - Free offices
+    public List<Office> getFreeOffices() {
+        return officeRepo.findFreeOffices();
+    }
 
+    // Existing C3 - Busiest office
+    public String getBusiestOffice() {
         List<Object[]> results =
                 officeRepo.findBusiestOffice();
 
@@ -60,10 +62,7 @@ public class OfficeService {
     }
 
     // UPDATE
-    public String updateOffice(
-            UUID id,
-            Office newOffice) {
-
+    public String updateOffice(UUID id, Office newOffice) {
         Optional<Office> existing =
                 officeRepo.findById(id);
 
@@ -72,18 +71,15 @@ public class OfficeService {
         }
 
         Office office = existing.get();
-
         office.setName(newOffice.getName());
         office.setOfficeNumber(newOffice.getOfficeNumber());
 
         officeRepo.save(office);
-
         return "Office is updated successfully";
     }
 
     // DELETE
     public String deleteOffice(UUID id) {
-
         Optional<Office> existing =
                 officeRepo.findById(id);
 
@@ -92,7 +88,6 @@ public class OfficeService {
         }
 
         officeRepo.delete(existing.get());
-
         return "Office is deleted successfully";
     }
 }
