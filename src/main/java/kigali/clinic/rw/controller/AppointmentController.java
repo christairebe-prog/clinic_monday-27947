@@ -33,21 +33,20 @@ public class AppointmentController {
     @Autowired
     private AppointmentService appServe;
 
+    // B1: Save an appointment
     @PostMapping("/save")
     public ResponseEntity<String> saveAppointment(
             @RequestBody Appointment appointment,
             @RequestParam(required = false) UUID patientId,
             @RequestParam(required = false) UUID doctorId) {
 
-        String response =
-                appServe.saveAppointment(
-                        appointment,
-                        patientId,
-                        doctorId);
+        String response = appServe.saveAppointment(
+                appointment,
+                patientId,
+                doctorId);
 
         if (response.equals(
                 "Doctor is already booked on that date")) {
-
             return new ResponseEntity<>(
                     response,
                     HttpStatus.CONFLICT);
@@ -55,7 +54,6 @@ public class AppointmentController {
 
         if (response.equals(
                 "Patient id and doctor id are required")) {
-
             return new ResponseEntity<>(
                     response,
                     HttpStatus.BAD_REQUEST);
@@ -63,15 +61,15 @@ public class AppointmentController {
 
         if (response.equals(
                 "That patient or doctor is not available")) {
-
             return new ResponseEntity<>(
                     response,
                     HttpStatus.NOT_FOUND);
         }
 
         if (response.equals(
-                "Appointment date is required")) {
-
+                "Appointment date is required")
+                || response.equals(
+                "Appointment date cannot be in the past")) {
             return new ResponseEntity<>(
                     response,
                     HttpStatus.BAD_REQUEST);
@@ -83,9 +81,7 @@ public class AppointmentController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<Appointment>>
-    getAllAppointments() {
-
+    public ResponseEntity<List<Appointment>> getAllAppointments() {
         return new ResponseEntity<>(
                 appServe.getAllAppointments(),
                 HttpStatus.OK);
@@ -96,7 +92,6 @@ public class AppointmentController {
             @RequestParam("status") String status) {
 
         try {
-
             AppointmentStatus appointmentStatus =
                     AppointmentStatus.valueOf(
                             status.toUpperCase());
@@ -107,7 +102,6 @@ public class AppointmentController {
                     HttpStatus.OK);
 
         } catch (IllegalArgumentException e) {
-
             return new ResponseEntity<>(
                     "Invalid appointment status",
                     HttpStatus.BAD_REQUEST);
@@ -115,15 +109,12 @@ public class AppointmentController {
     }
 
     @GetMapping("/between")
-    public ResponseEntity<List<Appointment>>
-    getAppointmentsBetweenDates(
+    public ResponseEntity<List<Appointment>> getAppointmentsBetweenDates(
             @RequestParam("start") LocalDate start,
             @RequestParam("end") LocalDate end) {
 
         return new ResponseEntity<>(
-                appServe.getAppointmentsBetweenDates(
-                        start,
-                        end),
+                appServe.getAppointmentsBetweenDates(start, end),
                 HttpStatus.OK);
     }
 
@@ -136,10 +127,9 @@ public class AppointmentController {
                 HttpStatus.OK);
     }
 
-    // C4
+    // C4: Cancel appointments for a doctor on a date
     @PatchMapping("/cancel-day")
-    public ResponseEntity<String>
-    cancelAppointmentsForDoctorOnDate(
+    public ResponseEntity<String> cancelAppointmentsForDoctorOnDate(
             @RequestParam("doctorId") UUID doctorId,
             @RequestParam("date") LocalDate date) {
 
@@ -148,25 +138,19 @@ public class AppointmentController {
                         doctorId,
                         date);
 
-        return new ResponseEntity<>(
-                response,
-                HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    // Bonus 1
+    // Bonus 1: Paginated appointments
     @GetMapping("/page")
-    public ResponseEntity<Page<Appointment>>
-    getAppointmentsPage(
+    public ResponseEntity<Page<Appointment>> getAppointmentsPage(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size,
             @RequestParam(defaultValue = "appointmentDate,asc")
             String sort) {
 
         return new ResponseEntity<>(
-                appServe.getAppointmentsPage(
-                        page,
-                        size,
-                        sort),
+                appServe.getAppointmentsPage(page, size, sort),
                 HttpStatus.OK);
     }
 
@@ -178,7 +162,6 @@ public class AppointmentController {
                 appServe.getAppointmentById(id);
 
         if (appointment.isEmpty()) {
-
             return new ResponseEntity<>(
                     "Appointment not found",
                     HttpStatus.NOT_FOUND);
@@ -190,8 +173,7 @@ public class AppointmentController {
     }
 
     @GetMapping("/doctor/{doctorId}")
-    public ResponseEntity<List<Appointment>>
-    getAppointmentsByDoctor(
+    public ResponseEntity<List<Appointment>> getAppointmentsByDoctor(
             @PathVariable UUID doctorId) {
 
         return new ResponseEntity<>(
@@ -200,8 +182,7 @@ public class AppointmentController {
     }
 
     @GetMapping("/patient/{patientId}")
-    public ResponseEntity<List<Appointment>>
-    getAppointmentsByPatient(
+    public ResponseEntity<List<Appointment>> getAppointmentsByPatient(
             @PathVariable UUID patientId) {
 
         return new ResponseEntity<>(
@@ -215,22 +196,11 @@ public class AppointmentController {
             @RequestBody Appointment newAppointment) {
 
         String response =
-                appServe.updateAppointment(
-                        id,
-                        newAppointment);
+                appServe.updateAppointment(id, newAppointment);
 
-        if (response.equals("Appointment not found")) {
-
-            return new ResponseEntity<>(
-                    response,
-                    HttpStatus.NOT_FOUND);
-        }
-
-        if (response.equals(
-                "That patient is not available")
-                || response.equals(
-                "That doctor is not available")) {
-
+        if (response.equals("Appointment not found")
+                || response.equals("That patient is not available")
+                || response.equals("That doctor is not available")) {
             return new ResponseEntity<>(
                     response,
                     HttpStatus.NOT_FOUND);
@@ -245,11 +215,9 @@ public class AppointmentController {
     public ResponseEntity<String> deleteAppointment(
             @PathVariable UUID id) {
 
-        String response =
-                appServe.deleteAppointment(id);
+        String response = appServe.deleteAppointment(id);
 
         if (response.equals("Appointment not found")) {
-
             return new ResponseEntity<>(
                     response,
                     HttpStatus.NOT_FOUND);
@@ -266,8 +234,7 @@ public class AppointmentController {
             @PathVariable UUID doctorId) {
 
         return new ResponseEntity<>(
-                appServe.getPendingAppointmentsOfDoctor(
-                        doctorId),
+                appServe.getPendingAppointmentsOfDoctor(doctorId),
                 HttpStatus.OK);
     }
 
@@ -308,21 +275,17 @@ public class AppointmentController {
 
         return new ResponseEntity<>(
                 appServe.getDoctorAppointmentsPage(
-                        doctorId,
-                        page,
-                        size),
+                        doctorId, page, size),
                 HttpStatus.OK);
     }
-    // Bonus 2
-@DeleteMapping("/cancelled-before")
-public ResponseEntity<String> deleteCancelledBefore(
-        @RequestParam("date") LocalDate date) {
 
-    String response =
-            appServe.deleteCancelledBefore(date);
+    // Bonus 2: Delete cancelled appointments before a date
+    @DeleteMapping("/cancelled-before")
+    public ResponseEntity<String> deleteCancelledBefore(
+            @RequestParam("date") LocalDate date) {
 
-    return new ResponseEntity<>(
-            response,
-            HttpStatus.OK);
-}
+        String response = appServe.deleteCancelledBefore(date);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 }

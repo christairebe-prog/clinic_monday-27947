@@ -15,27 +15,29 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
-
-@Entity 
-@Table (name="patient")
+@Entity
+@Table(name = "patient")
 public class Patient {
-    
-    @Id 
-    @GeneratedValue (strategy = GenerationType.UUID)
-    @Column (name="patientid")
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "patientid")
     private UUID id;
 
-    @Column (name="first_name")
+    @Column(name = "first_name")
     private String firstName;
 
-    @Column (name="last_name")
+    @Column(name = "last_name")
     private String lastName;
 
-    @Column (name="date_of_birth")
+    @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 
+    @Column(name = "ss_number", unique = true)
+    private String ssNumber;
+
     @JsonIgnore
-    @OneToMany (mappedBy = "patient")
+    @OneToMany(mappedBy = "patient")
     private List<Appointment> appointments = new ArrayList<>();
 
     public UUID getId() {
@@ -70,6 +72,14 @@ public class Patient {
         this.dateOfBirth = dateOfBirth;
     }
 
+    public String getSsNumber() {
+        return ssNumber;
+    }
+
+    public void setSsNumber(String ssNumber) {
+        this.ssNumber = ssNumber;
+    }
+
     public List<Appointment> getAppointments() {
         return appointments;
     }
@@ -77,6 +87,4 @@ public class Patient {
     public void setAppointments(List<Appointment> appointments) {
         this.appointments = appointments;
     }
-
-
 }

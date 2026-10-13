@@ -20,6 +20,9 @@ public interface PatientRepository extends JpaRepository<Patient, UUID> {
             String lastName,
             LocalDate dateOfBirth);
 
+    // C3: Find a patient by social security number
+    Optional<Patient> findBySsNumber(String ssNumber);
+
     // A1
     List<Patient> findByLastNameIgnoreCaseOrderByFirstNameAsc(
             String lastName);
