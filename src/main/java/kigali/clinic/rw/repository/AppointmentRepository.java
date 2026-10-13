@@ -112,4 +112,16 @@ int deleteCancelledBefore(
     Page<Appointment> findByDoctorId(
             UUID doctorId,
             Pageable pageable);
+           // D1 - Doctor's agenda for a specific day
+List<Appointment> findByDoctorIdAndAppointmentDateAndStatusNot(
+        UUID doctorId,
+        LocalDate appointmentDate,
+        AppointmentStatus status);
+
+        // D2 - Upcoming appointments for a patient
+List<Appointment> findByPatient_SsNumberAndAppointmentDateGreaterThanEqualAndStatusInOrderByAppointmentDateAsc(
+        String ssNumber,
+        LocalDate today,
+        List<AppointmentStatus> statuses);
+       
 }

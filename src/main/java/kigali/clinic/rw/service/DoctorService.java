@@ -3,6 +3,12 @@ package kigali.clinic.rw.service;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.time.LocalDate;
+import kigali.clinic.rw.domain.Appointment;
+import kigali.clinic.rw.domain.AppointmentStatus;
+import kigali.clinic.rw.repository.AppointmentRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,6 +32,9 @@ public class DoctorService {
 
     @Autowired
     private SpecializationRepository specRepo;
+
+    @Autowired
+private AppointmentRepository appointmentRepo;
 
     // CREATE
     public String saveDoctor(Doctor doctor) {
@@ -264,4 +273,25 @@ public class DoctorService {
         doctor.setOffice(office.get());
         return null;
     }
+   // D1 - Doctor's agenda for a specific day
+public ResponseEntity<?> getDoctorAgenda(
+        UUID doctorId,
+        LocalDate date) {
+
+    Optional<Doctor> doctor = docRepo.findById(doctorId);
+
+    if (doctor.isEmpty()) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body("The doctor with that id does not exist");
+    }
+
+    List<Appointment> appointments =
+            appointmentRepo.findByDoctorIdAndAppointmentDateAndStatusNot(
+        doctorId,
+        date,
+        AppointmentStatus.CANCELLED);
+
+    return ResponseEntity.ok(appointments);
+}
 }

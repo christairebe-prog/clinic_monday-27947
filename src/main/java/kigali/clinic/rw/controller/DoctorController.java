@@ -3,6 +3,8 @@ package kigali.clinic.rw.controller;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.time.LocalDate;
+import kigali.clinic.rw.domain.Appointment;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -169,4 +171,13 @@ public class DoctorController {
                     HttpStatus.CONFLICT);
         }
     }
+
+    // D1 - Doctor's agenda for a specific day
+@GetMapping("/{doctorId}/agenda")
+public ResponseEntity<?> getDoctorAgenda(
+        @PathVariable UUID doctorId,
+        @RequestParam("date") LocalDate date) {
+
+    return docServe.getDoctorAgenda(doctorId, date);
+}
 }

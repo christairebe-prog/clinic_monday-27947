@@ -177,4 +177,15 @@ public class PatientController {
                     HttpStatus.CONFLICT);
         }
     }
+
+   
+  
+    // D2 - Upcoming appointments of a patient
+    @GetMapping("/{ssNumber}/upcoming")
+    public ResponseEntity<?> getUpcomingAppointments(
+            @PathVariable String ssNumber) {
+
+        return patServe.getUpcomingAppointments(ssNumber);
+    }
+
 }
