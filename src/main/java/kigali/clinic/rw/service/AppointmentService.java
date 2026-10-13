@@ -36,6 +36,7 @@ public class AppointmentService {
     @Autowired
     private PatientRepository patRepo;
 
+    // B1: Save an appointment
     public String saveAppointment(
             Appointment appointment,
             UUID patientId,
@@ -53,11 +54,8 @@ public class AppointmentService {
             return "Patient id and doctor id are required";
         }
 
-        Optional<Doctor> getDoctor =
-                docRepo.findById(doctorId);
-
-        Optional<Patient> getPatient =
-                patRepo.findById(patientId);
+        Optional<Doctor> getDoctor = docRepo.findById(doctorId);
+        Optional<Patient> getPatient = patRepo.findById(patientId);
 
         if (getPatient.isEmpty() || getDoctor.isEmpty()) {
             return "That patient or doctor is not available";
@@ -65,6 +63,10 @@ public class AppointmentService {
 
         if (appointment.getAppointmentDate() == null) {
             return "Appointment date is required";
+        }
+
+        if (appointment.getAppointmentDate().isBefore(LocalDate.now())) {
+            return "Appointment date cannot be in the past";
         }
 
         boolean alreadyBooked =
@@ -77,17 +79,106 @@ public class AppointmentService {
             return "Doctor is already booked on that date";
         }
 
-        if (appointment.getStatus() == null) {
-            appointment.setStatus(AppointmentStatus.PENDING);
-        }
-
         appointment.setId(null);
         appointment.setDoctor(getDoctor.get());
         appointment.setPatient(getPatient.get());
+        appointment.setStatus(AppointmentStatus.SCHEDULED);
 
         appRepo.save(appointment);
 
         return "Appointment is saved successfully";
+    }
+
+    // B2: Update appointment status with allowed transitions
+    public String updateAppointmentStatus(
+            UUID id,
+            String newStatus) {
+
+        Optional<Appointment> existing = appRepo.findById(id);
+
+        if (existing.isEmpty()) {
+            return "The appointment with that id does not exist";
+        }
+
+        Appointment appointment = existing.get();
+        AppointmentStatus currentStatus = appointment.getStatus();
+        AppointmentStatus targetStatus;
+
+        try {
+            targetStatus = AppointmentStatus.valueOf(
+                    newStatus.toUpperCase());
+        } catch (IllegalArgumentException | NullPointerException e) {
+            return "Invalid appointment status";
+        }
+
+        boolean allowed = false;
+
+        if (currentStatus == AppointmentStatus.SCHEDULED) {
+            allowed = targetStatus == AppointmentStatus.CONFIRMED
+                    || targetStatus == AppointmentStatus.CANCELLED;
+        } else if (currentStatus == AppointmentStatus.CONFIRMED) {
+            allowed = targetStatus == AppointmentStatus.COMPLETED
+                    || targetStatus == AppointmentStatus.CANCELLED;
+        }
+
+        if (!allowed) {
+            return "Cannot change status from "
+                    + currentStatus + " to " + targetStatus;
+        }
+
+        appointment.setStatus(targetStatus);
+        appRepo.save(appointment);
+
+        return "Appointment status updated successfully";
+    }
+
+    // B3: Reschedule an appointment
+    public String rescheduleAppointment(
+            UUID id,
+            LocalDate newDate) {
+
+        Optional<Appointment> existing = appRepo.findById(id);
+
+        if (existing.isEmpty()) {
+            return "The appointment with that id does not exist";
+        }
+
+        Appointment appointment = existing.get();
+
+        if (appointment.getStatus() == AppointmentStatus.COMPLETED) {
+            return "A COMPLETED appointment cannot be rescheduled";
+        }
+
+        if (appointment.getStatus() == AppointmentStatus.CANCELLED) {
+            return "A CANCELLED appointment cannot be rescheduled";
+        }
+
+        if (newDate == null) {
+            return "Appointment date is required";
+        }
+
+        if (newDate.isBefore(LocalDate.now())) {
+            return "Appointment date cannot be in the past";
+        }
+
+        UUID doctorId = appointment.getDoctor().getId();
+
+        boolean doctorIsBooked =
+                appRepo.existsByDoctorIdAndAppointmentDateAndStatusNot(
+                        doctorId,
+                        newDate,
+                        AppointmentStatus.CANCELLED);
+
+        if (doctorIsBooked) {
+            return "Doctor is already booked on that date";
+        }
+
+        appointment.setAppointmentDate(newDate);
+        appointment.setStatus(AppointmentStatus.SCHEDULED);
+
+        appRepo.save(appointment);
+
+        return "Appointment rescheduled successfully";
     }
 
     public List<Appointment> getAllAppointments() {
@@ -108,90 +199,66 @@ public class AppointmentService {
 
     public List<Appointment> getAppointmentsByStatus(
             AppointmentStatus status) {
-
         return appRepo.findByStatusOrderByAppointmentDateAsc(status);
     }
 
     public List<Appointment> getAppointmentsBetweenDates(
             LocalDate start,
             LocalDate end) {
-
         return appRepo
                 .findByAppointmentDateBetweenOrderByAppointmentDateAsc(
-                        start,
-                        end);
+                        start, end);
     }
 
-    // C1
+    // Existing appointment statistics
     public List<Map<String, Object>> getAppointmentStatsByStatus() {
-
-        List<Object[]> results =
-                appRepo.countAppointmentsByStatus();
-
-        List<Map<String, Object>> response =
-                new ArrayList<>();
+        List<Object[]> results = appRepo.countAppointmentsByStatus();
+        List<Map<String, Object>> response = new ArrayList<>();
 
         for (Object[] row : results) {
-
-            Map<String, Object> item =
-                    new LinkedHashMap<>();
-
+            Map<String, Object> item = new LinkedHashMap<>();
             item.put("status", row[0]);
             item.put("count", row[1]);
-
             response.add(item);
         }
 
         return response;
     }
 
-    // C4
     public String cancelAppointmentsForDoctorOnDate(
             UUID doctorId,
             LocalDate date) {
-
         int cancelled =
-                appRepo.cancelAppointmentsForDoctorOnDate(
-                        doctorId,
-                        date);
-
+                appRepo.cancelAppointmentsForDoctorOnDate(doctorId, date);
         return cancelled + " appointments cancelled";
     }
 
-    // Bonus 1
     public Page<Appointment> getAppointmentsPage(
             int page,
             int size,
             String sort) {
 
         String[] sortParts = sort.split(",");
-
         String property = sortParts[0];
-
-        Sort.Direction direction =
-                Sort.Direction.ASC;
+        Sort.Direction direction = Sort.Direction.ASC;
 
         if (sortParts.length > 1
                 && sortParts[1].equalsIgnoreCase("desc")) {
-
             direction = Sort.Direction.DESC;
         }
 
-        Pageable pageable =
-                PageRequest.of(
-                        page,
-                        size,
-                        Sort.by(direction, property));
+        Pageable pageable = PageRequest.of(
+                page, size, Sort.by(direction, property));
 
         return appRepo.findAll(pageable);
     }
 
+    // General update deliberately does not change status.
     public String updateAppointment(
             UUID id,
             Appointment newAppointment) {
 
-        Optional<Appointment> existing =
-                appRepo.findById(id);
+        Optional<Appointment> existing = appRepo.findById(id);
 
         if (existing.isEmpty()) {
             return "Appointment not found";
@@ -201,19 +268,13 @@ public class AppointmentService {
 
         appointment.setAppointmentDate(
                 newAppointment.getAppointmentDate());
-
-        appointment.setReason(
-                newAppointment.getReason());
-
-        appointment.setStatus(
-                newAppointment.getStatus());
+        appointment.setReason(newAppointment.getReason());
 
         if (newAppointment.getPatient() != null
                 && newAppointment.getPatient().getId() != null) {
 
             Optional<Patient> patient =
-                    patRepo.findById(
-                            newAppointment.getPatient().getId());
+                    patRepo.findById(newAppointment.getPatient().getId());
 
             if (patient.isEmpty()) {
                 return "That patient is not available";
@@ -226,8 +287,7 @@ public class AppointmentService {
                 && newAppointment.getDoctor().getId() != null) {
 
             Optional<Doctor> doctor =
-                    docRepo.findById(
-                            newAppointment.getDoctor().getId());
+                    docRepo.findById(newAppointment.getDoctor().getId());
 
             if (doctor.isEmpty()) {
                 return "That doctor is not available";
@@ -242,90 +302,65 @@ public class AppointmentService {
     }
 
     public String deleteAppointment(UUID id) {
-
-        Optional<Appointment> existing =
-                appRepo.findById(id);
+        Optional<Appointment> existing = appRepo.findById(id);
 
         if (existing.isEmpty()) {
             return "Appointment not found";
         }
 
         appRepo.delete(existing.get());
-
         return "Appointment is deleted successfully";
     }
 
     public List<Appointment> getPendingAppointmentsOfDoctor(
             UUID doctorId) {
-
         return appRepo
                 .findByDoctorIdAndStatusOrderByAppointmentDateAsc(
-                        doctorId,
-                        AppointmentStatus.PENDING);
+                        doctorId, AppointmentStatus.PENDING);
     }
 
     public List<OverdueAppointmentDto>
     getOverduePendingAppointments() {
-
         return appRepo.findPastAppointmentsByStatus(
                 AppointmentStatus.PENDING);
     }
 
-    public List<Map<String, Object>>
-    getAppointmentCountPerDoctor() {
-
-        List<Object[]> results =
-                appRepo.countAppointmentsPerDoctor();
-
-        List<Map<String, Object>> response =
-                new ArrayList<>();
+    public List<Map<String, Object>> getAppointmentCountPerDoctor() {
+        List<Object[]> results = appRepo.countAppointmentsPerDoctor();
+        List<Map<String, Object>> response = new ArrayList<>();
 
         for (Object[] row : results) {
-
-            Map<String, Object> item =
-                    new LinkedHashMap<>();
-
+            Map<String, Object> item = new LinkedHashMap<>();
             item.put("doctorId", row[0]);
             item.put("firstName", row[1]);
             item.put("lastName", row[2]);
             item.put("appointmentCount", row[3]);
-
             response.add(item);
         }
 
         return response;
     }
 
-    public List<Appointment>
-    getAppointmentsBySpecialization(
+    public List<Appointment> getAppointmentsBySpecialization(
             String specializationName) {
-
-        return appRepo.findByDoctorSpecialization(
-                specializationName);
+        return appRepo.findByDoctorSpecialization(specializationName);
     }
-// Bonus 2
-public String deleteCancelledBefore(LocalDate date) {
 
-    int deleted =
-            appRepo.deleteCancelledBefore(date);
+    public String deleteCancelledBefore(LocalDate date) {
+        int deleted = appRepo.deleteCancelledBefore(date);
+        return deleted + " cancelled appointments deleted";
+    }
 
-    return deleted + " cancelled appointments deleted";
-}
     public Page<Appointment> getDoctorAppointmentsPage(
             UUID doctorId,
             int page,
             int size) {
 
-        Pageable pageable =
-                PageRequest.of(
-                        page,
-                        size,
-                        Sort.by(
-                                Sort.Direction.ASC,
-                                "appointmentDate"));
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by(Sort.Direction.ASC, "appointmentDate"));
 
-        return appRepo.findByDoctorId(
-                doctorId,
-                pageable);
+        return appRepo.findByDoctorId(doctorId, pageable);
     }
 }
