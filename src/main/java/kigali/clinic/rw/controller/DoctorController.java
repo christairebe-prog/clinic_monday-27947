@@ -180,4 +180,14 @@ public ResponseEntity<?> getDoctorAgenda(
 
     return docServe.getDoctorAgenda(doctorId, date);
 }
+
+
+    // D3 - Search doctors by name
+    @GetMapping("/search")
+    public ResponseEntity<List<Doctor>> searchDoctors(
+            @RequestParam("name") String name) {
+        return ResponseEntity.ok(
+                docServe.searchDoctorsByName(name));
+    }
+
 }

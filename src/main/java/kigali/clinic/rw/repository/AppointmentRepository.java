@@ -124,4 +124,5 @@ List<Appointment> findByPatient_SsNumberAndAppointmentDateGreaterThanEqualAndSta
         LocalDate today,
         List<AppointmentStatus> statuses);
        
+        long countByAppointmentDate(LocalDate appointmentDate);
 }

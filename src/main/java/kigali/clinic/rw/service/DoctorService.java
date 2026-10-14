@@ -20,6 +20,7 @@ import kigali.clinic.rw.domain.Specialization;
 import kigali.clinic.rw.repository.DoctorRepository;
 import kigali.clinic.rw.repository.OfficeRepository;
 import kigali.clinic.rw.repository.SpecializationRepository;
+import kigali.clinic.rw.domain.Doctor;
 
 @Service
 public class DoctorService {
@@ -294,4 +295,10 @@ public ResponseEntity<?> getDoctorAgenda(
 
     return ResponseEntity.ok(appointments);
 }
+
+    // D3 - Search doctors by first or last name
+    public List<Doctor> searchDoctorsByName(String name) {
+        return docRepo.searchByName(name);
+    }
+
 }
